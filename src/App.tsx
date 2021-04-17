@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import fs from 'fs';
 import { Route, Router, Text, ButtonGroup, Button, useText, Image } from '@urban-bot/core';
-import logo from './assets/logo.png';
+import logo from './assets/aether.jpg';
 
 function Echo() {
     const [text, setText] = useState('Say something');

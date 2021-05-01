@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import fs from 'fs';
 import { Route, Router, Text, ButtonGroup, Button, useText, Image } from '@urban-bot/core';
 import logo from './assets/aether.jpg';
-import {RevelationTitles, FormatQuiz, Questions, EventLocations, TimeOfFulfillment} from './components/Quiz';
+import {RevelationTitles, FormatQuiz, Questions, Answers, TimeOfFulfillment} from './components/Quiz';
 
 
 function Echo() {
@@ -65,9 +65,7 @@ function GetQuiz() {
 
 
   useEffect(() => {
-    var result = "Title: " + RevelationTitles[index] + '\n' +
-      "Event Location: " + EventLocations[index] + '\n' +
-     "Time of Fulfillment: " + TimeOfFulfillment[index];
+    var result = "Answer> " + Answers[index];
     setText(result + '\n\nsend "more" to see next question');
   },[answer])
 

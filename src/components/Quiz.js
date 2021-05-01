@@ -1,11 +1,16 @@
 "use strict";
 exports.__esModule = true;
 exports.FormatQuiz = exports.TimeOfFulfillment = exports.EventLocations = exports.Questions = exports.RevelationTitles = void 0;
-var RevelationTitles, Questions, EventLocations, TimeOfFulfillment;
+var RevelationTitles;
 exports.RevelationTitles = RevelationTitles;
+var Questions;
 exports.Questions = Questions;
+var EventLocations;
 exports.EventLocations = EventLocations;
+var TimeOfFulfillment;
 exports.TimeOfFulfillment = TimeOfFulfillment;
+var ModelAnswerKeywords;
+var StringUtils = require('turbocommons-ts').StringUtils;
 exports.Questions = Questions = [
     'Revelation 1:1-8',
     'Revelation 1:9-20',
@@ -40,7 +45,8 @@ exports.EventLocations = EventLocations = [
     "Mt Zion the temple of the tabernacle of the testimony",
     "Among caves and rocks of mountains where the chosen people of the tabernacle temple hid",
     "The tabernacle temple which belongs to Gentile and the Euphrates",
-    "The land and the sea, Measured God’s temple and the alter",
+    "The land and the sea",
+    "Measured God’s temple and the altar",
     "The tabernacle temple which belongs to  Gentile (tabernacle of heaven)",
     "Tabernacle temple that betrayed (tabernacle of heaven)",
     "Before the throne in Mt Zion",
@@ -101,7 +107,13 @@ exports.RevelationTitles = RevelationTitles = [
     'The wedding banquet of the Lamb between the spirits and the flesh',
     'The souls of the martyrs and the first resurrection',
     'The promised new heaven and new earth, Shincheonji',
-    'The holy city where the tree of life is in',
+    'The hold city where the tree of life is ',
+];
+ModelAnswerKeywords = [
+    "holy",
+    "city",
+    "tree",
+    "life"
 ];
 var FormatQuiz = function (title) {
     console.log("FormatQuiz ran");
@@ -114,3 +126,54 @@ var FormatQuiz = function (title) {
     return result;
 };
 exports.FormatQuiz = FormatQuiz;
+var TestMatching = function () {
+    var n = StringUtils.countWords("word1 word2 word3");
+    var number = StringUtils.countStringOccurences('The holy city where the tree of life is in', 'holy city');
+    console.log(n);
+    console.log(number);
+    var string1 = "tees";
+    var string2 = "tree";
+    var l = StringUtils.compareByLevenshtein(string1, string2);
+    var percent = StringUtils.compareSimilarityPercent(string1, string2);
+    console.log(l);
+    console.log(percent);
+};
+var printEachElement = function () {
+    ModelAnswerKeywords.forEach(function (value) {
+        console.log(value);
+    });
+};
+var splitAnswerIntoWordsArray = function () {
+    var result;
+    var answer = RevelationTitles[21];
+    result = answer.split(" ");
+    return result;
+};
+var compareEachAnswerWordWithModelAnswerKeyword = function (modelAnswerKeywords, answerWords) {
+    var matchingSequence = [];
+    modelAnswerKeywords.forEach(function (keyword) {
+        answerWords.forEach(function (word) {
+            // console.log("word: " + word);
+            // console.log("keyword: " + keyword);
+            var result = StringUtils.compareSimilarityPercent(word, keyword);
+            // console.log("compare: " + result);
+            if (result > 50) {
+                matchingSequence.push(word);
+            }
+        });
+    });
+    console.log("matchingSequence = " + matchingSequence);
+    if (matchingSequence.length == ModelAnswerKeywords.length) {
+        console.log(compareEachAnswerWordWithModelAnswerKeyword.name + ": determine that it is correct, returning true");
+        return true;
+    }
+    else {
+        console.log(compareEachAnswerWordWithModelAnswerKeyword.name + ": determine that it is incorrect, returning false");
+        return false;
+    }
+};
+// TestMatching();
+// printEachElement();
+// splitAnswerIntoWordsArray();
+// console.log(splitAnswerIntoWordsArray());
+compareEachAnswerWordWithModelAnswerKeyword(ModelAnswerKeywords, splitAnswerIntoWordsArray());

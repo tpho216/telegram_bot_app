@@ -1,57 +1,22 @@
 let RevelationTitles: Array<string>;
 let Questions : Array<string>;
-let EventLocations : Array<string>;
+let Answers : Array<string>;
 let TimeOfFulfillment : Array<string>;
+let ModelAnswerKeywords : Array<string>;
+
+const {StringUtils} = require('turbocommons-ts');
 
 Questions = [
-  'Revelation 1:1-8',
-  'Revelation 1:9-20',
-  'Revelation 2 & 3',
-  'Revelation 4',
-  'Revelation 5',
-  'Revelation 6',
-  'Revelation 7',
-  'Revelation 8',
-  'Revelation 9',
-  'Revelation 10',
-  'Revelation 11',
-  'Revelation 12',
-  'Revelation 13',
-  'Revelation 14',
-  'Revelation 15',
-  'Revelation 16',
-  'Revelation 17',
-  'Revelation 18',
-  'Revelation 19',
-  'Revelation 20',
-  'Revelation 21',
-  'Revelation 22'
+  '1. ① Write down the chapters in which 3 mysteries are written in Revelation',
+  '1. ② write the reason why they have been recorded in parables.',
+
 ]
 
-EventLocations =  [
-  "God’s seven stars and the seven golden lampstand of tabernacle temple(the tabernacle temple that prepares the way of the Lord)",
-  "God’s seven stars and the seven golden lampstands tabernacle",
-  "God’s seven stars and the seven golden lampstands tabernacle",
-  "Before the throne of God in spiritual realm",
-  "Before the throne of God in spiritual realm",
-  "God’s Tabernacle temple (the seven golden lampstands tabernacle)",
-  "Mt Zion the temple of the tabernacle of the testimony",
-  "Among caves and rocks of mountains where the chosen people of the tabernacle temple hid",
-  "The tabernacle temple which belongs to Gentile and the Euphrates",
-  "The land and the sea",
-  "Measured God’s temple and the altar",
-  "The tabernacle temple which belongs to  Gentile (tabernacle of heaven)",
-  "Tabernacle temple that betrayed (tabernacle of heaven)",
-  "Before the throne in Mt Zion",
-  "The temple of the tabernacle of the testimony",
-  "before the throne of God besides the sea of glass",
-  "Tabernacle temple that betrayed (first tabernacle) and the Beast’s nation.",
-  "The desert Babylon that captures the chosen people",
-  "Denominations which belong to Babylon, the demon’s nation",
-  "The wedding banquet of the Lamb (the temple of the tabernacle of the testimony)",
-  "The wedding banquet of the Lamb (the temple of the tabernacle of the testimony)",
-  "New heaven and new earth (TTT), the Holy City",
-  "the new Jerusalem in spiritual realm"
+Answers =  [
+  "Rv 1 the mystery of the seven stars (also correct if written 'the mystery of the seven stars and the seven golden lampstands')"
+  + "\nRv 17 the mystery of the prostitute and the beast with seven heads and ten horns (must include 'prostitute')"
+  + "\nRv 10 the mystery of the seventh trumpet",
+  "To hide it from the enemies (also correct if 'to hide it from the outsiders')"
 ]
 
 TimeOfFulfillment = [
@@ -102,8 +67,15 @@ RevelationTitles = [
     'The wedding banquet of the Lamb between the spirits and the flesh',
     'The souls of the martyrs and the first resurrection',
     'The promised new heaven and new earth, Shincheonji',
-    'The holy city where the tree of life is in',
+    'The hold city where the tree of life is ',
 ];
+
+ModelAnswerKeywords = [
+  "holy",
+  "city",
+  "tree",
+  "life"
+]
 
 const FormatQuiz = (title: Array<string>) => {
     console.log("FormatQuiz ran");
@@ -118,9 +90,76 @@ const FormatQuiz = (title: Array<string>) => {
     return result;
 };
 
+const TestMatching = () => {
+  var n = StringUtils.countWords("word1 word2 word3");
+  var number = StringUtils.countStringOccurences('The holy city where the tree of life is in', 'holy city')
+  console.log(n);
+  console.log(number);
+
+  var string1 = "tees"
+  var string2 = "tree"
+  var l = StringUtils.compareByLevenshtein(string1, string2);
+  var percent = StringUtils.compareSimilarityPercent(string1, string2);
+  console.log(l);
+  console.log(percent);
+}
+
+const printEachElement = () => {
+  ModelAnswerKeywords.forEach((value) => {
+    console.log(value)
+  });
+}
+
+
+
+const splitAnswerIntoWordsArray = (): Array<string> =>
+{
+  let result : Array <string>;
+  const answer =  RevelationTitles[21];
+  result = answer.split(" ");
+
+  return result;
+}
+
+const compareEachAnswerWordWithModelAnswerKeyword = (modelAnswerKeywords : Array<string>,
+                                                     answerWords : Array<string>) : boolean =>
+{
+
+  let matchingSequence : Array<string> = [];
+
+  modelAnswerKeywords.forEach((keyword) => {
+    answerWords.forEach((word)=> {
+      // console.log("word: " + word);
+      // console.log("keyword: " + keyword);
+      var result = StringUtils.compareSimilarityPercent(word, keyword);
+      // console.log("compare: " + result);
+      if (result > 50) {
+        matchingSequence.push(word);
+      }
+    })
+
+  });
+
+  console.log("matchingSequence = " + matchingSequence);
+
+  if (matchingSequence.length == ModelAnswerKeywords.length) {
+    console.log(compareEachAnswerWordWithModelAnswerKeyword.name + ": determine that it is correct, returning true");
+    return true;
+
+  }
+  else {
+    console.log(compareEachAnswerWordWithModelAnswerKeyword.name + ": determine that it is incorrect, returning false");
+    return false;
+  }
+}
+// TestMatching();
+// printEachElement();
+// splitAnswerIntoWordsArray();
+// console.log(splitAnswerIntoWordsArray());
+compareEachAnswerWordWithModelAnswerKeyword(ModelAnswerKeywords, splitAnswerIntoWordsArray());
 // console.log(Questions.length);
 // console.log(RevelationTitles.length);
 // console.log(TimeOfFulfillment.length);
 // console.log(EventLocations.length);
 
-export { RevelationTitles, Questions, EventLocations, TimeOfFulfillment, FormatQuiz };
+export { RevelationTitles, Questions, Answers, TimeOfFulfillment, FormatQuiz };

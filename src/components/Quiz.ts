@@ -1,6 +1,13 @@
+import {ModelAnswer} from "./ModelAnswer"
+import {Question} from "./Question"
+
 let RevelationTitles: Array<string>;
-let Questions : Array<string>;
-let ModelAnswers : Array<string>;
+let MockedQuestions : Array<string>;
+
+let MockedModelAnswers : Array<string> = [""];
+let ModelAnswers : Array<ModelAnswer> = new Array<ModelAnswer>();
+let Questions : Array<Question> = new Array<Question>();
+
 let TimeOfFulfillment : Array<string>;
 let ModelAnswerKeywords : Array<string>;
 let ModelAnswerKeywordsTwo : Array<string>;
@@ -9,6 +16,7 @@ let ModelAnswerKeywordsFour : Array<string>;
 let ModelAnswerKeywordsFive : Array<string>;
 let ModelAnswerKeywordsSix : Array<string>;
 let ModelAnswerKeywordsSeven : Array<string>;
+
 let ModelAnswerKeywordsEight : Array<string>;
 let ModelAnswerKeywordsNine : Array<string>;
 let ModelAnswerKeywordsTen : Array<string>;
@@ -25,7 +33,8 @@ let ModelAnswerKeywordsTwenty : Array<string>;
 
 const {StringUtils} = require('turbocommons-ts');
 
-Questions = [
+
+MockedQuestions = [
   '1. ① Write down the chapters in which 3 mysteries are written in Revelation, ② write the reason why they have been recorded in parables.'
   ,'2. ① In which chapter was the promise in Rv 2-3 fulfilled?'
   ,'3. ① After what does the salvation and the power and the kingdom of God come? Record the chapter as well.  '
@@ -49,7 +58,8 @@ Questions = [
 
 ]
 
-ModelAnswers =  [
+
+MockedModelAnswers =  [
   "1. ① Rv 1 the mystery of the seven stars (also correct if written 'the mystery of the seven stars and the seven golden lampstands')"
   + "\nRv 17 the mystery of the prostitute and the beast with seven heads and ten horns (must include 'prostitute')"
   + "\nRv 10 the mystery of the seventh trumpet" +
@@ -88,56 +98,58 @@ ModelAnswers =  [
 
 ]
 
-TimeOfFulfillment = [
-  "At the time of the second coming",
-  "When the seven messengers of the seven golden lampstands tabernacle become one with Nicolaitans who invaded",
-  "When the seven messengers of the seven golden lampstands tabernacle become one with Nicolaitans who invaded",
-  "After apostle John (new John) sends the letters to the seven messengers of the seven golden lampstands tabernacle (after the event of Rev 2 ~3)",
-  "After sending the advocate letters to the seven messengers of the seven golden lampstands tabernacle (after the event of Rev 2 ~3)",
-  "After the Lamb took the scroll sealed with seven seals",
-  "After the judgement of the tabernacle temple who betrayed (After Rev 6)",
-  "After the 6th seal is broken (after Rev 6)",
-  "After fourth angel sounded his trumpet",
-  "After sixth angel sounded his trumpet (After Rev 9)",
-  "After John (new john) eats God’s open scroll",
-  "42 months period, when the red dragon reigned the tabernacle of the heaven and" +
-  " after male child gains victory over the dragon",
-  "When Dragon’s seven head and ten horns beast devoured the tabernacle of heaven",
-  "After the event of Rev 13",
-  "at the time of the harvest",
-  "After the victory against the beast in Rev 13",
-  "After establishment of the temple of the tabernacle of the testimony",
-  "After pouring out the wrath of the seven golden bowls",
-  "After the judgement of the great prostitute in Rev 17",
-  "After betrayer oxen and the destroyer beasts are seized",
-  "After inviting the spiritual and physical guests to the wedding banquet",
-  "After the first heaven and the first earth passed away",
-]
+let id : number = 0;
 
-RevelationTitles = [
-    'The summary and conclusion of the entire book of Revelation',
-    'The beginning of the events of Revelation and the mystery of the seven stars and seven golden lampstands',
-    'The letters to the messengers of the seven churches',
-    'The throne and order of the spiritual realm',
-    'The book sealed with seven seals',
-    'The judgment of the first heaven, sun, moon, and stars who betrayed',
-    'The newly created Spiritual Israel 12 tribes',
-    'The last seal and the seven trumpets',
-    'The locusts from the abyss and the angels who sinned',
-    'The revealed book from heaven and the promised pastor',
-    'The two witnesses and the seventh trumpet',
-    'The war between Dragon and God',
-    'The chosen people who received the mark of the beast and betrayed',
-    'The 144,000 first fruits sealed and standing on Mount Zion',
-    'The Temple of the Tabernacle of the Testimony - place all nation must come to worship',
-    'The seven bowls of wrath',
-    'The prostitute and the wine of adultery ( Tree of knowledge of good and evil)',
-    'The marriage with Satan who detroyed all nations',
-    'The wedding banquet of the Lamb between the spirits and the flesh',
-    'The souls of the martyrs and the first resurrection',
-    'The promised new heaven and new earth, Shincheonji',
-    'The hold city where the tree of life is ',
-];
+
+const switchQuestions = (index : number) : Array<string> => {
+  let result : Array <string> = [""];
+
+  switch (index) {
+    case 0:
+      return ModelAnswerKeywords;
+    case 1:
+      return ModelAnswerKeywordsTwo;
+    case 2:
+      return ModelAnswerKeywordsThree;
+    case 3:
+      return ModelAnswerKeywordsFour;
+    case 4:
+      return ModelAnswerKeywordsFive;
+    case 5:
+      return ModelAnswerKeywordsSix;
+    case 6:
+      return ModelAnswerKeywordsSeven;
+    case 7:
+      return ModelAnswerKeywordsEight;
+    case 8:
+      return ModelAnswerKeywordsNine;
+    case 9:
+      return ModelAnswerKeywordsTen;
+    case 10:
+      return ModelAnswerKeywordsEleven;
+    case 11:
+      return ModelAnswerKeywordsTwelve;
+    case 12:
+      return ModelAnswerKeywordsThirteen;
+    case 13:
+      return ModelAnswerKeywordsFourteen;
+    case 14:
+      return ModelAnswerKeywordsFifteen;
+    case 15:
+      return ModelAnswerKeywordsSixteen;
+    case 16:
+      return ModelAnswerKeywordsSeventeen;
+    case 17:
+      return ModelAnswerKeywordsEighteen;
+    case 18:
+      return ModelAnswerKeywordsNineteen;
+    case 19:
+      return ModelAnswerKeywordsTwenty;
+    default:
+      return result;
+      break;
+  }
+}
 
 ModelAnswerKeywords = [
   "Revelation",
@@ -329,7 +341,7 @@ const CompareEachAnswerWordWithModelAnswerKeyword = (modelAnswerKeywords : Array
       // console.log("word: " + word);
       // console.log("keyword: " + keyword);
       var result = StringUtils.compareSimilarityPercent(word, keyword);
-      console.log("compare: "+ "word " + word + " keyword " + keyword + "-> result: " + result);
+      // console.log("compare: "+ "word " + word + " keyword " + keyword + "-> result: " + result);
       if (result > 50) {
         matchingSequence.push(word);
       }
@@ -337,9 +349,9 @@ const CompareEachAnswerWordWithModelAnswerKeyword = (modelAnswerKeywords : Array
 
   });
 
-  console.log("matchingSequence = " + matchingSequence);
-  console.log("length of matchingSequence = " + matchingSequence.length);
-  console.log("length of model answer keywords = " + modelAnswerKeywords.length);
+  // console.log("matchingSequence = " + matchingSequence);
+  // console.log("length of matchingSequence = " + matchingSequence.length);
+  // console.log("length of model answer keywords = " + modelAnswerKeywords.length);
 
   if ((matchingSequence.length/modelAnswerKeywords.length) >= 0.75) {
     console.log(CompareEachAnswerWordWithModelAnswerKeyword.name + ": determine that it is correct, returning true");
@@ -350,7 +362,20 @@ const CompareEachAnswerWordWithModelAnswerKeyword = (modelAnswerKeywords : Array
     console.log(CompareEachAnswerWordWithModelAnswerKeyword.name + ": determine that it is incorrect, returning false");
     return false;
   }
+
 }
+
+MockedQuestions.forEach(() => {
+  Questions.push(new Question(id, MockedQuestions[id]));
+  id++;
+})
+
+MockedModelAnswers.forEach(() => {
+  let keywords = switchQuestions(id);
+  ModelAnswers.push(new ModelAnswer(id, keywords,  MockedModelAnswers[id]))
+  id++;
+})
+
 // TestMatching();
 // printEachElement();
 // splitAnswerIntoWordsArray();
@@ -360,8 +385,18 @@ const CompareEachAnswerWordWithModelAnswerKeyword = (modelAnswerKeywords : Array
 // console.log(RevelationTitles.length);
 // console.log(TimeOfFulfillment.length);
 // console.log(EventLocations.length);
+//console.log(Questions);
 
-export { RevelationTitles, Questions,
+
+const GetModelKeywordsFromId = (id : number) : Array <string> =>  {
+  return ModelAnswers[id].keywords;
+}
+
+const GetQuestionTextFromId = (id : number) : string => {
+  return Questions[id].text;
+}
+
+export { RevelationTitles, MockedQuestions,
   ModelAnswers, TimeOfFulfillment,
   ModelAnswerKeywords,
   ModelAnswerKeywordsTwo,
@@ -383,4 +418,6 @@ export { RevelationTitles, Questions,
   ModelAnswerKeywordsEighteen,
   ModelAnswerKeywordsNineteen,
   ModelAnswerKeywordsTwenty,
-  FormatQuiz, CompareEachAnswerWordWithModelAnswerKeyword };
+  FormatQuiz, MockedModelAnswers, switchQuestions, CompareEachAnswerWordWithModelAnswerKeyword,
+  Questions, GetQuestionTextFromId,
+  GetModelKeywordsFromId};

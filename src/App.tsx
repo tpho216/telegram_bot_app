@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import fs from 'fs';
 import { Route, Router, Text, ButtonGroup, Button, useText, Image } from '@urban-bot/core';
 import logo from './assets/aether.jpg';
-import {RevelationTitles, FormatQuiz, Questions, ModelAnswers,
+import {RevelationTitles, FormatQuiz, MockedQuestions, ModelAnswers, MockedModelAnswers,
+  switchQuestions,
   ModelAnswerKeywords, ModelAnswerKeywordsTwo,
   ModelAnswerKeywordsThree, ModelAnswerKeywordsFour,
   ModelAnswerKeywordsFive, ModelAnswerKeywordsSix,
@@ -13,6 +14,8 @@ import {RevelationTitles, FormatQuiz, Questions, ModelAnswers,
   ModelAnswerKeywordsFifteen, ModelAnswerKeywordsSixteen,
   ModelAnswerKeywordsSeventeen, ModelAnswerKeywordsEighteen,
   ModelAnswerKeywordsNineteen, ModelAnswerKeywordsTwenty,
+  GetModelKeywordsFromId,
+  Questions, GetQuestionTextFromId,
   TimeOfFulfillment, CompareEachAnswerWordWithModelAnswerKeyword} from './components/Quiz';
 const {StringUtils} = require('turbocommons-ts');
 
@@ -67,137 +70,123 @@ function AddPrayer() {
   )
 }
 
+let numberQLeft : number;
+
+
 function GetQuiz() {
-  console.log("Get Quiz called");
+
   const [text, setText] = useState('Do you want to Quiz? ' +
     '\n answer "yes", "no" to stop');
   let [index, setIndex] = useState(0);
   let [question, setQuestion] = useState('Not yet');
   let [reveal, setReveal] = useState('Not yet');
-  let [modelAnswer, setModelAnswer] = useState('Not yet');
+
+  let [modelAnswer, setModelAnswer]  = useState("");
+
+
+  let [modelKeywords, setModelKeywords] = useState([""]);
   let [answer, setAnswer] = useState('Not yet');
+  //console.log("Get Quiz called");
 
   useEffect(() => {
-    console.log("useEffect: Reveal")
+    console.log("useEffect: Reveal");
     var result = "Answer> " + modelAnswer;
     var instruction = '\n\nsend "more" to see next question';
     setText(result + instruction);
-  },[reveal])
+
+  }, [reveal])
 
   useEffect(() => {
-    var questionTemplate = "";
-    var randomIndex = Math.floor(Math.random() * Questions.length);
-    console.log("random index = " + randomIndex);
-    setText( Questions[randomIndex] +
-       + questionTemplate +
-      '\n\nsend "stop" to finish the quiz' +
-      '\nsend "more" to see question' +
-      '\nsend "reveal" to see answer' +
-      '\nsend "answer" to attempt answer');
-    console.log("Model answer: " + ModelAnswers[randomIndex]);
-    setModelAnswer(ModelAnswers[randomIndex]);
-    console.log("Number of questions left: " + Questions.length);
-    setIndex(randomIndex);
-  }, [question])
-
-  useEffect(() => {
-      console.log("useEffect: Answer")
-      setText("Please type in the answer or send 'ask me'");
+    console.log("useEffect: Answer")
+    setText("Please type in the answer or send 'ask me'");
 
   }, [answer])
 
+
+  useEffect(() => {
+    console.log("Number of QUESTIONS = " + Questions.length);
+    numberQLeft = Questions.length - 1; //A little hacky but it makes sense ^^
+    //Actually so that it won't reach 20 ^ break the boundary
+    var randomIndex = Math.floor(Math.random() * numberQLeft);
+    console.log("RANDOM INDEX = " + randomIndex);
+    var info = "\n\nNumber of questions left = " + numberQLeft;
+
+    setText(Questions[randomIndex].text +
+      '\n\nsend "stop" to finish the quiz' +
+      '\nsend "more" to see question' +
+      '\nsend "reveal" to see answer' +
+      '\nsend "answer" to attempt answer' + info);
+    // console.log("Before spliced \n" + Questions[randomIndex].text);
+    // console.log("ID = " + Questions[randomIndex].id);
+    // console.log("index = " + randomIndex);
+
+    // console.log("Model answer: " + ModelAnswers[randomIndex]);
+    setModelAnswer(MockedModelAnswers[Questions[randomIndex].id]);
+    setModelKeywords(switchQuestions(Questions[randomIndex].id));
+
+    // console.log("Look at this" + modelKeywords);
+    // console.log("Number of questions left: " + Questions.length);
+    if (Questions.length > 1) {
+      Questions.splice(randomIndex, 1);
+    }
+    else if (Questions.length <= 1) {
+      numberQLeft = 0;
+      var congrats = "\n\n👏🎉🎊 You finished the Quiz. Congrats! Happy sealing!";
+      setText(info + congrats);
+    }
+    // console.log("After spliced \n" + Questions[randomIndex].text);
+    // console.log("index = " + randomIndex);
+    // console.log("ID = " + Questions[randomIndex].id);
+
+    setIndex(randomIndex);
+  }, [question])
+
+
+
   useText(({ text }) => {
     if (text === 'ask me' || text === 'more') {
-      console.log("User ask for a question");
+      // console.log("User ask for a question");
       setQuestion(Math.random().toString());
+
     }
 
-    if (text === 'reveal'){
+    else if (text === 'reveal'){
       //a little hacky but this notifies UseEffect that is based on
       //answer value
-
       setReveal(Math.random().toString());
     }
 
-    if (text === 'answer'){
+    else if (text === 'answer'){
       setAnswer(Math.random().toString());
     }
-    if (text === 'stop') {
+
+    else if (text === 'stop') {
       setText('God bless!');
     }
 
     else if (text !== 'answer' && text !== 'reveal'
     && text !== 'stop' && text !== 'more') {
-      // console.log("A different case");
-      // console.log("index =" + index);
-      let modelKeywords : Array <string> = [""];
-      modelKeywords = switchQuestions(index);
-      console.log("Model keywords are " + modelKeywords);
+
+      //modelKeywords = switchQuestions(index);
+      // console.log("Model keywords are " + modelKeywords);
       var isCorrect = CompareEachAnswerWordWithModelAnswerKeyword(modelKeywords,text.split(' '))
 
       var diff = "\nNumber of different characters from model answer is: ";
-
+      // console.log("model keywords: " + modelKeywords);
       diff += "\n" + StringUtils.compareByLevenshtein(text, modelAnswer);
       var result = isCorrect ? "Correct" : "Incorrect";
 
-
       var instruction = '\n\nsend "more" to see next question'
-      + "\n send 'reveal' to see the answer";
-      setText("The answer was " + result + diff + instruction)
+      + "\nsend 'reveal' to see the answer";
+
+      var info = "\n\nNumber of questions left = " + numberQLeft;
+      setText("The answer was " + result + diff + instruction + info)
     }
 
 
   });
 
-  const switchQuestions = (index : number) : Array<string> => {
-    let result : Array <string> = [""];
 
-    switch (index) {
-      case 0:
-        return ModelAnswerKeywords;
-      case 1:
-        return ModelAnswerKeywordsTwo;
-      case 2:
-        return ModelAnswerKeywordsThree;
-      case 3:
-        return ModelAnswerKeywordsFour;
-      case 4:
-        return ModelAnswerKeywordsFive;
-      case 5:
-        return ModelAnswerKeywordsSix;
-      case 6:
-        return ModelAnswerKeywordsSeven;
-      case 7:
-        return ModelAnswerKeywordsEight;
-      case 8:
-        return ModelAnswerKeywordsNine;
-      case 9:
-        return ModelAnswerKeywordsTen;
-      case 10:
-        return ModelAnswerKeywordsEleven;
-      case 11:
-        return ModelAnswerKeywordsTwelve;
-      case 12:
-        return ModelAnswerKeywordsThirteen;
-      case 13:
-        return ModelAnswerKeywordsFourteen;
-      case 14:
-        return ModelAnswerKeywordsFifteen;
-      case 15:
-        return ModelAnswerKeywordsSixteen;
-      case 16:
-        return ModelAnswerKeywordsSeventeen;
-      case 17:
-        return ModelAnswerKeywordsEighteen;
-      case 18:
-        return ModelAnswerKeywordsNineteen;
-      case 19:
-        return ModelAnswerKeywordsTwenty;
-      default:
-        return result;
-        break;
-    }
-  }
 
   return (
     <Text>

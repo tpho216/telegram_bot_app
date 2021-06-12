@@ -119,7 +119,8 @@ function GetQuiz(props : any) {
         } else if (QuestionsArr.length == 0) {
             numberQLeft = 0;
             const congrats = '\n\n👏🎉🎊 You finished the Quiz. Congrats!';
-            setText(info + congrats);
+            const instruction = "\n\n send 'reset' to do the quiz again";
+            setText(info + congrats + instruction);
         }
 
         setIndex(randomIndex);

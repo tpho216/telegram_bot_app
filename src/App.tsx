@@ -9,42 +9,6 @@ import { Question } from './types/Question';
 const { StringUtils } = require('turbocommons-ts');
 let ModelAnswersArr : Array <ModelAnswer> = new Array<ModelAnswer>();
 let QuestionsArr : Array <Question> = new Array <Question>();
-
-function Increment() {
-    const [value, setValue] = useState(0);
-
-    const addNumber = () => {
-        setValue(value + 1);
-    };
-
-    return (
-        <Image
-            title={value}
-            file={fs.createReadStream(logo)}
-            buttons={
-                <ButtonGroup>
-                    <Button onClick={addNumber}>Add one</Button>
-                </ButtonGroup>
-            }
-        />
-    );
-}
-
-//prayer : string, userId : string
-function AddPrayer() {
-    const [text, setText] = useState('Say something');
-
-    useText(({ text }) => {
-        setText(text);
-    });
-
-    return (
-        <Text>
-            <i>{text}</i>
-        </Text>
-    );
-}
-
 let numberQLeft: number;
 
 const initializeClient = () : HttpClient | undefined => {
@@ -131,14 +95,6 @@ function GetQuiz(props : any) {
     }, [answer]);
 
     useEffect(() => {
-        if (QuestionsArr.length <= 1) {
-            numberQLeft = 0;
-            const info = '\n\nNumber of questions left = ' + numberQLeft;
-            const congrats = '\n\n👏🎉🎊 You finished the Quiz. Congrats!';
-            const instruct = "send 'reset' to do quiz again";
-            setText(info + congrats);
-            return;
-        }
         console.log('Number of QUESTIONS = ' + QuestionsArr.length);
         numberQLeft = QuestionsArr.length - 1; //A little hacky but it makes sense ^^
         //Actually so that it won't reach 20 ^ break the boundary
@@ -160,7 +116,7 @@ function GetQuiz(props : any) {
         debugger;
         if (QuestionsArr.length > 1) {
             QuestionsArr.splice(randomIndex, 1);
-        } else if (QuestionsArr.length <= 1) {
+        } else if (QuestionsArr.length == 0) {
             numberQLeft = 0;
             const congrats = '\n\n👏🎉🎊 You finished the Quiz. Congrats!';
             setText(info + congrats);
@@ -194,9 +150,7 @@ function GetQuiz(props : any) {
             let diff = '\nNumber of different characters from model answer is: ';
             diff += '\n' + StringUtils.compareByLevenshtein(text, modelAnswer);
             const result = isCorrect ? 'Correct' : 'Incorrect';
-
             const instruction = '\n\nsend "more" to see next question' + "\nsend 'reveal' to see the answer";
-
             const info = '\n\nNumber of questions left = ' + numberQLeft;
             setText('The answer was ' + result + diff + instruction + info);
         }

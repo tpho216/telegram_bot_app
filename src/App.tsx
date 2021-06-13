@@ -115,9 +115,18 @@ function GetQuiz() {
     useEffect(() => {
 
         debugger;
+
+        if (Users[getUserIndexFromId(CurrentChatId)].QLeft.length == 0) {
+            debugger;
+            const congrats = '\n\n👏🎉🎊 You finished the Quiz. Congrats!';
+            const instruction = "\n\n send 'reset' to do the quiz again";
+            setText(congrats + instruction);
+            return;
+        }
+
         const instanceIndex = instanceNum - 1;
         console.log('Number of QUESTIONS = ' + Users[getUserIndexFromId(CurrentChatId)].QLeft.length);
-        let numberQLeft = Users[getUserIndexFromId(CurrentChatId)].QLeft.length - 1; //A little hacky but it makes sense ^^
+        let numberQLeft = Users[getUserIndexFromId(CurrentChatId)].QLeft.length-1; //minus the one currently doing
 
         //Actually so that it won't reach 20 ^ break the boundary
         const randomIndex = Math.floor(Math.random() * numberQLeft);
@@ -135,9 +144,11 @@ function GetQuiz() {
 
         setModelAnswer(getFullAnswerFromId(Users[getUserIndexFromId(CurrentChatId)].QLeft[randomIndex].id-1, ModelAnswersArr));
         setModelKeywords(getKeywordsFromId(Users[getUserIndexFromId(CurrentChatId)].QLeft[randomIndex].id-1,  ModelAnswersArr));
-        if (numberQLeft > 1) {
+        if (Users[getUserIndexFromId(CurrentChatId)].QLeft.length >= 1) {
             Users[getUserIndexFromId(CurrentChatId)].QLeft.splice(randomIndex, 1);
-        } else if (numberQLeft == 0) {
+            debugger;
+        } else if (Users[getUserIndexFromId(CurrentChatId)].QLeft.length == 0) {
+            debugger;
             const congrats = '\n\n👏🎉🎊 You finished the Quiz. Congrats!';
             const instruction = "\n\n send 'reset' to do the quiz again";
             setText(info + congrats + instruction);
@@ -160,9 +171,8 @@ function GetQuiz() {
             setText('God bless!');
         }
         else if (text === 'reset') {
-            //TODO Should have a new instance of HttpClient
             if (typeof (HttpClient.getInstance()) !== 'undefined') {
-                Users[instanceNum].QLeft = ToQuestions(HttpClient.getInstance().questions);
+                Users[getUserIndexFromId(CurrentChatId)].QLeft = ToQuestions(HttpClient.getInstance().questions);
             }
             setText("Quiz resetted, reply 'more' to redo questions")
         }
@@ -172,7 +182,7 @@ function GetQuiz() {
             diff += '\n' + StringUtils.compareByLevenshtein(text, modelAnswer);
             const result = isCorrect ? 'Correct' : 'Incorrect';
             const instruction = '\n\nsend "more" to see next question' + "\nsend 'reveal' to see the answer";
-            const info = '\n\nNumber of questions left = ' + Users[instanceNum].QLeft.length;
+            const info = '\n\nNumber of questions left = ' + Users[getUserIndexFromId(CurrentChatId)].QLeft.length;
             setText('The answer was ' + result + diff + instruction + info);
         }
 

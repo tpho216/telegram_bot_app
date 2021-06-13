@@ -6,11 +6,14 @@ import { CompareEachAnswerWordWithModelAnswerKeyword } from './components/Quiz';
 import { HttpClient } from './httpclient/implementation';
 import { ModelAnswer } from './types/ModelAnswer';
 import { Question } from './types/Question';
+import {User} from './types/User';
 const { StringUtils } = require('turbocommons-ts');
 let ModelAnswersArr : Array <ModelAnswer> = new Array<ModelAnswer>();
-let QuestionsArr : Array <Question> = new Array <Question>();
-let numberQLeft: number;
 
+let Users : Array<User> = new Array <User>();
+let instanceNum : number = 0;
+let CurrentChatId : string = "";
+let isNewUser : boolean = false;
 const initializeClient = () : HttpClient | undefined => {
     console.log("Initializing question answer sets...")
     const httpClient = HttpClient.getInstance();
@@ -22,7 +25,8 @@ const initializeClient = () : HttpClient | undefined => {
     }
 }
 
-const ToModelAnswer = (objects : Array<Object>) =>  {
+const ToModelAnswer = (objects : Array<Object>) : Array<ModelAnswer> =>  {
+    let ModelAnswersArr : Array<ModelAnswer> = new Array<ModelAnswer> ();
     objects.forEach((object) =>
     {
         var answer = Object.values(object);
@@ -31,10 +35,12 @@ const ToModelAnswer = (objects : Array<Object>) =>  {
         const fullanswer : string = answer[2];
         ModelAnswersArr.push(new ModelAnswer(id, keywords, fullanswer));
     });
+
+    return ModelAnswersArr;
 }
 
-const ToQuestions = (objects : Array<Object>) => {
-    QuestionsArr = [];
+const ToQuestions = (objects : Array<Object>) : Array<Question> => {
+    let QuestionsArr : Array<Question> = new Array<Question> ();
     objects.forEach((object) =>
     {
         var question = Object.values(object);
@@ -42,6 +48,8 @@ const ToQuestions = (objects : Array<Object>) => {
         const fullquestion : string = question[1];
         QuestionsArr.push(new Question(id, fullquestion));
     });
+
+    return QuestionsArr;
 
 }
 const fetchData = async(client : HttpClient) => {
@@ -52,12 +60,10 @@ const fetchData = async(client : HttpClient) => {
     catch (e) {
         console.log(e);
     }
-
 };
 
-function GetQuiz(props : any) {
-    const [prepare, setPrepare]  : any = useState(null);
-    const [init, setInit] : any = useState(null);
+function GetQuiz() {
+
     const [text, setText] = useState('Do you want to Quiz? ' + '\n answer "yes", "no" to stop');
     const [index, setIndex] = useState(0);
     const [question, setQuestion] = useState('Not yet');
@@ -65,21 +71,33 @@ function GetQuiz(props : any) {
     const [modelAnswer, setModelAnswer] = useState('');
     const [modelKeywords, setModelKeywords] = useState(['']);
     const [answer, setAnswer] = useState('Not yet');
+
+    useText(({chat}) => {
+        debugger;
+        CurrentChatId = chat.id;
+        console.log("Quiz: current chat id = " + CurrentChatId);
+    });
+
     //run once
     useEffect(() => {
-        if (typeof (HttpClient.getInstance()) !== 'undefined')
+        debugger;
+        console.log("Quiz: current chat id = " + CurrentChatId);
+
+        console.log("User at index = " + getUserIndexFromId(CurrentChatId) + " requests quiz");
+        if (typeof (HttpClient.getInstance()) !== 'undefined') {
             var answer_values = HttpClient.getInstance().answers;
-        var question_values = HttpClient.getInstance().questions;
+            var question_values = HttpClient.getInstance().questions;
+        }
         if (typeof(answer_values) !== 'undefined') {
-            ToModelAnswer(answer_values);
+            ModelAnswersArr = ToModelAnswer(answer_values);
         }
         if (typeof(question_values) !== 'undefined') {
-            ToQuestions(question_values);
+            Users[getUserIndexFromId(CurrentChatId)].QLeft = ToQuestions(question_values);
         }
         else {
             console.log('Instance data not fetched yet.');
         }
-    },[]);
+    },[CurrentChatId]);
 
 
     useEffect(() => {
@@ -95,37 +113,39 @@ function GetQuiz(props : any) {
     }, [answer]);
 
     useEffect(() => {
-        console.log('Number of QUESTIONS = ' + QuestionsArr.length);
-        numberQLeft = QuestionsArr.length - 1; //A little hacky but it makes sense ^^
+
+        debugger;
+        const instanceIndex = instanceNum - 1;
+        console.log('Number of QUESTIONS = ' + Users[getUserIndexFromId(CurrentChatId)].QLeft.length);
+        let numberQLeft = Users[getUserIndexFromId(CurrentChatId)].QLeft.length - 1; //A little hacky but it makes sense ^^
+
         //Actually so that it won't reach 20 ^ break the boundary
         const randomIndex = Math.floor(Math.random() * numberQLeft);
         console.log('RANDOM INDEX = ' + randomIndex);
         const info = '\n\nNumber of questions left = ' + numberQLeft;
 
         setText(
-            QuestionsArr[randomIndex].text +
-                '\n\nsend "stop" to finish the quiz' +
-                '\nsend "more" to see question' +
-                '\nsend "reveal" to see answer' +
-                '\nsend "answer" to attempt answer' +
-                info,
+            Users[getUserIndexFromId(CurrentChatId)].QLeft[randomIndex].text +
+            '\n\nsend "stop" to finish the quiz' +
+            '\nsend "more" to see question' +
+            '\nsend "reveal" to see answer' +
+            '\nsend "answer" to attempt answer' +
+            info,
         );
 
-        setModelAnswer(getFullAnswerFromId(QuestionsArr[randomIndex].id-1));
-        setModelKeywords(getKeywordsFromId(QuestionsArr[randomIndex].id-1));
-        debugger;
-        if (QuestionsArr.length > 1) {
-            QuestionsArr.splice(randomIndex, 1);
-        } else if (QuestionsArr.length == 0) {
-            numberQLeft = 0;
+        setModelAnswer(getFullAnswerFromId(Users[getUserIndexFromId(CurrentChatId)].QLeft[randomIndex].id-1, ModelAnswersArr));
+        setModelKeywords(getKeywordsFromId(Users[getUserIndexFromId(CurrentChatId)].QLeft[randomIndex].id-1,  ModelAnswersArr));
+        if (numberQLeft > 1) {
+            Users[getUserIndexFromId(CurrentChatId)].QLeft.splice(randomIndex, 1);
+        } else if (numberQLeft == 0) {
             const congrats = '\n\n👏🎉🎊 You finished the Quiz. Congrats!';
             const instruction = "\n\n send 'reset' to do the quiz again";
             setText(info + congrats + instruction);
         }
 
         setIndex(randomIndex);
-        debugger;
     }, [question]);
+
 
     useText(({ text }) => {
         if (text === 'ask me' || text === 'more') {
@@ -142,7 +162,7 @@ function GetQuiz(props : any) {
         else if (text === 'reset') {
             //TODO Should have a new instance of HttpClient
             if (typeof (HttpClient.getInstance()) !== 'undefined') {
-                ToQuestions(HttpClient.getInstance().questions);
+                Users[instanceNum].QLeft = ToQuestions(HttpClient.getInstance().questions);
             }
             setText("Quiz resetted, reply 'more' to redo questions")
         }
@@ -152,7 +172,7 @@ function GetQuiz(props : any) {
             diff += '\n' + StringUtils.compareByLevenshtein(text, modelAnswer);
             const result = isCorrect ? 'Correct' : 'Incorrect';
             const instruction = '\n\nsend "more" to see next question' + "\nsend 'reveal' to see the answer";
-            const info = '\n\nNumber of questions left = ' + numberQLeft;
+            const info = '\n\nNumber of questions left = ' + Users[instanceNum].QLeft.length;
             setText('The answer was ' + result + diff + instruction + info);
         }
 
@@ -165,23 +185,51 @@ function GetQuiz(props : any) {
     );
 }
 
-const getKeywordsFromId = (id : number) : Array<string> => {
+
+const getKeywordsFromId = (id : number, ModelAnswersArr : Array<ModelAnswer>) : Array<string> => {
     return ModelAnswersArr[id].keywords;
 }
 
-const getFullAnswerFromId = (id : number) : string => {
+const getFullAnswerFromId = (id : number, ModelAnswersArr : Array<ModelAnswer>) : string => {
     return ModelAnswersArr[id].fullAnswer;
 }
 
+const getUserIndexFromId = (id: string) : number => {
+    return Users.findIndex(x => x.id === id);
+}
+
+
 export function App() {
     initializeClient();
+    const dummyQLeft = new Array <Question>();
+
+    useText(({chat})=> {
+        let isOldUser = Users.find(x => x.id === chat.id);
+        CurrentChatId = chat.id;
+
+        console.log("Current Chat Id = " + CurrentChatId);
+        if (typeof (isOldUser) === 'undefined') {
+            console.log('This is a new user');
+            //init user
+            instanceNum = instanceNum + 1;
+
+            const user : User = new User(chat.id, instanceNum, dummyQLeft);
+            console.log("Created user number with chatId = " + chat.id + " with instanceNum = " + instanceNum);
+
+            Users.push(user);
+        }
+
+        else {
+            console.log('This is an old user. instanceNum = ' + instanceNum);
+        }
+    })
+
     if (typeof(HttpClient.getInstance()) !== 'undefined') {
         fetchData(HttpClient.getInstance());
         console.log("fetched data");
     }
 
     return (
-
         <>
             <Text>Hi, I'm a bot designed for quiz activities! Type /quizme to start the quiz </Text>
             <Router>

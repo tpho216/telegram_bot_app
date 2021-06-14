@@ -73,14 +73,12 @@ function GetQuiz() {
     const [answer, setAnswer] = useState('Not yet');
 
     useText(({chat}) => {
-        debugger;
         CurrentChatId = chat.id;
         console.log("Quiz: current chat id = " + CurrentChatId);
     });
 
     //run once
     useEffect(() => {
-        debugger;
         console.log("Quiz: current chat id = " + CurrentChatId);
 
         console.log("User at index = " + getUserIndexFromId(CurrentChatId) + " requests quiz");
@@ -113,11 +111,7 @@ function GetQuiz() {
     }, [answer]);
 
     useEffect(() => {
-
-        debugger;
-
         if (Users[getUserIndexFromId(CurrentChatId)].QLeft.length == 0) {
-            debugger;
             const congrats = '\n\n👏🎉🎊 You finished the Quiz. Congrats!';
             const instruction = "\n\n send 'reset' to do the quiz again";
             setText(congrats + instruction);
@@ -146,9 +140,7 @@ function GetQuiz() {
         setModelKeywords(getKeywordsFromId(Users[getUserIndexFromId(CurrentChatId)].QLeft[randomIndex].id-1,  ModelAnswersArr));
         if (Users[getUserIndexFromId(CurrentChatId)].QLeft.length >= 1) {
             Users[getUserIndexFromId(CurrentChatId)].QLeft.splice(randomIndex, 1);
-            debugger;
         } else if (Users[getUserIndexFromId(CurrentChatId)].QLeft.length == 0) {
-            debugger;
             const congrats = '\n\n👏🎉🎊 You finished the Quiz. Congrats!';
             const instruction = "\n\n send 'reset' to do the quiz again";
             setText(info + congrats + instruction);

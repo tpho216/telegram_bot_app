@@ -28,11 +28,8 @@ const CompareEachAnswerWordWithModelAnswerKeyword = (
 
     modelAnswerKeywords.forEach((keyword) => {
         answerWords.forEach((word) => {
-            // console.log("word: " + word);
-            // console.log("keyword: " + keyword);
             const cleanKey = cleanKeyword(keyword);
             const result = StringUtils.compareSimilarityPercent(word, cleanKey);
-            // console.log("compare: "+ "word " + word + " keyword " + keyword + "-> result: " + result);
             debugger;
             if (result > 50) {
                 matchingSequence.push(word);

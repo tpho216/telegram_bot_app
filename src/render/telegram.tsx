@@ -7,7 +7,8 @@ import { HttpClient } from '../httpclient/implementation';
 
 dotenv.config();
 
-const { TELEGRAM_TOKEN, PORT} = process.env;
+const { TELEGRAM_TOKEN} = process.env;
+const BOT_PORT = process.env.BOT_PORT;
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 if (!TELEGRAM_TOKEN) {
@@ -20,7 +21,7 @@ const urbanBotTelegram = new UrbanBotTelegram({
 });
 
 render(
-  <Root bot={urbanBotTelegram} port={PORT ? Number(PORT) : undefined}>
+  <Root bot={urbanBotTelegram} port={BOT_PORT ? Number(BOT_PORT) : undefined}>
     <App />
   </Root>,
 
@@ -29,6 +30,6 @@ render(
       if (TELEGRAM_TOKEN) {
           console.log("Telegram Bot Token is configured.");
       }
-      console.log('Telegram bot has started on PORT ' +  Number(PORT))}
+      console.log('Telegram bot has started on PORT ' +  Number(BOT_PORT))}
 
 );

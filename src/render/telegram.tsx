@@ -7,9 +7,7 @@ import { HttpClient } from '../httpclient/implementation';
 
 dotenv.config();
 
-const { TELEGRAM_TOKEN } = process.env;
-
-const PORT = 8000;
+const { TELEGRAM_TOKEN, PORT} = process.env;
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 if (!TELEGRAM_TOKEN) {

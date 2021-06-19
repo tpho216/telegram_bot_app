@@ -1,10 +1,10 @@
 {
-    "name": "@urban-bot/starter-typescript",
+    "name": "telegram quiz bot app",
     "version": "0.2.3",
-    "description": "Start write chatbots with urban-bot and typescript",
+    "description": "A quiz app that uses Urban bot API for Telegram specific use",
     "repository": {
         "type": "git",
-        "url": "https://github.com/urban-bot/urban-bot-starter-typescript.git"
+        "url": "https://github.com/tpho216/telegram_bot_app"
     },
     "license": "MIT",
     "main": "dist/index.js",
@@ -13,11 +13,12 @@
     ],
     "scripts": {
         "build": "webpack",
-        "start": "nodemon",
+        "start": "node dist/index.js",
         "debug": "nodemon --debug 3001",
         "lint": "eslint \"./src\" --ext \".js,.jsx,.ts,.tsx\"",
         "lint:fix": "npm run lint -- --fix",
-        "dev": "node dist/index.js",
+        "dev": "nodemon",
+        "postinstall": "tsc",
         "start-tunnel": "ngrok http 8080",
         "test": "jest",
         "typecheck": "tsc --noEmit"

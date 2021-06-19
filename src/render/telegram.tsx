@@ -8,8 +8,8 @@ import { HttpClient } from '../httpclient/implementation';
 dotenv.config();
 
 const { TELEGRAM_TOKEN, PORT} = process.env;
-const BOT_PORT = PORT; //Heroku to automatically set PORT
-//const BOT_PORT = process.env.BOT_PORT; //to manually set config PORT
+//const BOT_PORT = PORT; //Heroku to automatically set PORT
+const BOT_PORT = process.env.BOT_PORT; //to manually set config PORT
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 

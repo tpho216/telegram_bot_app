@@ -7,8 +7,13 @@ export class HttpClient extends BaseHttpClient {
   public answers: any;
   public questions: any;
 
-  private constructor() {
-    super('http://localhost:5000');
+
+  private constructor(){
+      super("http://localhost:5000");
+      // prodURL : string = "https://tele-quiz-bot-app.herokuapp.com";
+      // apiPORT : number = 4000;
+
+
   }
 
   public static getInstance() {

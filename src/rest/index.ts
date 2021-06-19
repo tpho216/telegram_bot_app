@@ -2,7 +2,7 @@ const express = require('express');
 const db = require('./queries');
 const bodyParser = require('body-parser');
 const app = express();
-const port =   4000;
+const port =  process.env.PORT || 8080;
 
 export const runDatabaseAPIService = () => {
   app.use(bodyParser.json());

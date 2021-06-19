@@ -26,7 +26,10 @@ render(
   </Root>,
 
   () => {
-
-      console.log('telegram bot has started')}
+      console.log("Check whether Telegram Bot Token is already configured in Heroku...\n");
+      if (TELEGRAM_TOKEN) {
+          console.log("Telegram Bot Token is configured.");
+      }
+      console.log('Telegram bot has started on PORT ' +  Number(PORT))}
 
 );

@@ -13,11 +13,12 @@
     ],
     "scripts": {
         "build": "webpack",
-        "start": "node dist/index.js",
+        "start": "node dist/index.js && npx urban-bot set-webhook telegram",
         "debug": "nodemon --debug 3001",
         "lint": "eslint \"./src\" --ext \".js,.jsx,.ts,.tsx\"",
         "lint:fix": "npm run lint -- --fix",
         "dev": "nodemon",
+        "set:webhook": "npx urban-bot set-webhook telegram",
         "deploy:git": "npm run build && git add . && git commit -m 'changes' && git push",
         "postinstall": "tsc",
         "start-tunnel": "ngrok http 8080",

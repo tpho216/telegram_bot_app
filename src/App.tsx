@@ -226,10 +226,10 @@ export function App() {
         }
     })
 
-    // if (typeof(HttpClient.getInstance()) !== 'undefined') {
-    //     fetchData(HttpClient.getInstance());
-    //     console.log("fetched data");
-    // } TODO: Changes to try deployment on Heroku
+    if (typeof(HttpClient.getInstance()) !== 'undefined') {
+        fetchData(HttpClient.getInstance());
+        console.log("fetched data");
+    } //TODO: Changes to try deployment on Heroku
 
     return (
         <>

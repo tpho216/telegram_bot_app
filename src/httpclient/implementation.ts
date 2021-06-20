@@ -9,7 +9,7 @@ export class HttpClient extends BaseHttpClient {
 
 
   private constructor(){
-      super("http://localhost:5000");
+      super("https://quiz-api-app.herokuapp.com/");
       // prodURL : string = "https://tele-quiz-bot-app.herokuapp.com";
       // apiPORT : number = 4000;
 

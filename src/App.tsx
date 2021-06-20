@@ -58,7 +58,7 @@ const fetchData = async(client : HttpClient) => {
         await client.getQuestions();
     }
     catch (e) {
-        console.log(e);
+        console.log("Error fetching data from Quiz API : " + e);
     }
 };
 

@@ -129,10 +129,10 @@ function GetQuiz() {
 
         setText(
             Users[getUserIndexFromId(CurrentChatId)].QLeft[randomIndex].text +
+            '\n please reply with the answer or...' +
             '\n\nsend "stop" to finish the quiz' +
             '\nsend "more" to see question' +
             '\nsend "reveal" to see answer' +
-            '\nsend "answer" to attempt answer' +
             info,
         );
 

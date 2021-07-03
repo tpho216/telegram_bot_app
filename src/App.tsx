@@ -88,9 +88,11 @@ function GetQuiz() {
         }
         if (typeof(answer_values) !== 'undefined') {
             ModelAnswersArr = ToModelAnswer(answer_values);
+            console.log(ModelAnswersArr);
         }
         if (typeof(question_values) !== 'undefined') {
             Users[getUserIndexFromId(CurrentChatId)].QLeft = ToQuestions(question_values);
+            console.log(Users[getUserIndexFromId(CurrentChatId)].QLeft);
         }
         else {
             console.log('Instance data not fetched yet.');

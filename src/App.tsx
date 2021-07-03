@@ -172,7 +172,12 @@ function GetQuiz() {
             const isCorrect = CompareEachAnswerWordWithModelAnswerKeyword(modelKeywords, text.split(' '));
             let diff = '\nNumber of different characters from model answer is: ';
             diff += '\n' + StringUtils.compareByLevenshtein(text, modelAnswer);
-            const result = isCorrect ? 'Correct' : 'Incorrect';
+
+            let result = isCorrect ? 'Correct' : 'Incorrect';
+            //override
+            if (StringUtils.compareByLevenshtein(text,modelAnswer) < 10) {
+                result = 'Correct';
+            }
             const instruction = '\n\nsend "more" to see next question' + "\nsend 'reveal' to see the answer";
             const info = '\n\nNumber of questions left = ' + Users[getUserIndexFromId(CurrentChatId)].QLeft.length;
             setText('The answer was ' + result + diff + instruction + info);

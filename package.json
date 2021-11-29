@@ -25,7 +25,7 @@
     },
     "dependencies": {
         "@types/jest": "^26.0.23",
-        "@types/node": "^15.12.4",
+        "@types/node": "^16.11.10",
         "@types/react": "^17.0.9",
         "@urban-bot/core": "^0.2.5",
         "@urban-bot/facebook": "^0.2.5",
